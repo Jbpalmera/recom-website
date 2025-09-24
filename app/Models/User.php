@@ -31,7 +31,7 @@ class User extends Authenticatable
         'agency',
         'office_affiliation',
         'designation',
-        'username',   // ✅ add this
+        'username', 
         'email',
         'password',
         

@@ -62,30 +62,35 @@
     bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md">
 
         <div class="p-6 border-b flex justify-between items-center">
-            <h2 class="text-2xl font-bold">Recommender</h2>
+            <h2 class="text-2xl font-bold">Admin Panel</h2>
             <button id="closeSidebar" class="md:hidden text-white hover:text-gray-200">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
         <nav class="flex-1 p-4 space-y-2">
-            <a href="{{ route('dashboard') }}"
+            <a href="{{ route('admin.dashboard') }}"
                 class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-300 group">
                 <i class="fas fa-chart-pie mr-3 group-hover:text-gray-200"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('recommendations') }}" 
-            {{-- <a href="#" --}}
+              <a href="{{ route('admin.createEvents') }}"
                 class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-300 group">
                 <i class="fas fa-calendar-alt mr-3 group-hover:text-gray-200"></i>
-                <span>Events</span>
+                <span>Create Events</span>
             </a>
 
-            <a href="#"
+             <a href="{{ route('admin.viewEvents') }}"
                 class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-300 group">
-                <i class="fas fa-info-circle mr-3 group-hover:text-gray-200"></i>
-                <span>About us</span>
+                <i class="fas fa-calendar-alt mr-3 group-hover:text-gray-200"></i>
+                <span>View Events</span>
             </a>
+            <a href="{{ route('admin.upload_dataset') }}"
+                class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-300 group">
+                <i class="fas fa-calendar-alt mr-3 group-hover:text-gray-200"></i>
+                <span>Upload Excel</span>
+            </a>
+        
 
             <a href="{{ route('profile') }}"
                 class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-300 group">

@@ -6,26 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    /**
+     * Run the migrations.
+     */
+    // database/migrations/xxxx_xx_xx_create_events_table.php
+    public function up()
     {
-        Schema::create('trainings', function (Blueprint $table) {
+        Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('course_title');
-            $table->string('platform_used');
-            $table->string('course_description');
+            $table->string('title');
+            $table->text('description');
             $table->string('category');   // e.g., "Web Dev", "AI", "Business"
             $table->string('level');      // Beginner, Intermediate, Advanced
+            $table->string('format');     // Online, Onsite
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('resource_person');
-            $table->time('start_time');
-            $table->time('end_time');
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('trainings');
+        Schema::dropIfExists('events');
     }
 };
