@@ -1,17 +1,18 @@
 <?php
 
-use App\Http\Controllers\Admin\Auth\LoginController;
-use App\Http\Controllers\Admin\TrainingController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\CreateEventController;
+use App\Http\Controllers\Admin\TrainingController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SurveyController;
-use App\Http\Controllers\RecommenderController;
-use App\Http\Controllers\Admin\UploadDataSetController;
+use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,21 +21,48 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Root redirect depending on auth
+/*
+|--------------------------------------------------------------------------
+| Public / Guest Routes
+|--------------------------------------------------------------------------
+*/
+
+// Root redirect based on authentication
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('dashboard') // Logged-in users → dashboard
         : redirect()->route('login');    // Guests → login
 });
 
-// Import CSV
+// Welcome page
+Route::get('/welcome', fn () => view('welcomePage'))->name('welcomePage');
+// about page
+Route::get('/about', [App\Http\Controllers\PageController::class, 'about'])->name('about');
+
+// Import CSV form (public access, optional)
 Route::get('/import', [ImportController::class, 'showForm']);
 Route::post('/import', [ImportController::class, 'import'])->name('import');
 
-// Public Events (if any)
+// Public events listing
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 
-// Authentication routes
+// Individual event details
+Route::get('/events/{id}', [EventController::class, 'show'])->name('events.showInfo');
+Route::get('/events/title/{title}', [EventController::class, 'showByTitle'])->name('events.showByTitle');
+Route::get('/events/external/{external_id}', [EventController::class, 'showByExternalId'])
+    ->name('events.showExternal');
+
+// Join form page for an event
+Route::get('/events/{eventId}/join', [EventRegistrationController::class, 'create'])
+    ->name('events.joinForm')->middleware('auth');
+
+// join from recommended
+Route::get('/events/{eventId}/join', [EventRegistrationController::class, 'create'])->name('events.joinForm');
+
+// Handle form submission
+Route::post('/events/{event}/join', [EventRegistrationController::class, 'store'])->name('events.joinProcess');
+
+// Authentication routes (public)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -45,51 +73,83 @@ Route::post('/register-step1', [RegisterController::class, 'storeStep1'])->name(
 Route::get('/register-step2', [RegisterController::class, 'showStep2'])->name('register.step2');
 Route::post('/register-step2', [RegisterController::class, 'register'])->name('register.store');
 
-// Routes for authenticated users
+/*
+|--------------------------------------------------------------------------
+| Authenticated User Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
-    // Survey
-    Route::get('/survey', [SurveyController::class, 'create'])->name('survey.create');
-    Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 
     // User dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Survey
+    Route::get('/survey', [SurveyController::class, 'create'])->name('survey.create');
+    Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
 });
 
-// ------------------- ADMIN ROUTES ------------------- //
+/*
+|--------------------------------------------------------------------------
+| Admin Authentication Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->group(function () {
+    // Login form
+    Route::get('/login', [AdminAuthController::class, 'showAdminLoginForm'])->name('admin.login');
+    // Login POST
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+    // Logout (can also be protected)
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+});
 
-// Admin login
-Route::get('/admin/login', [LoginController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/admin/login', [LoginController::class, 'login'])->name('admin.login.submit');
-Route::post('/admin/logout', [LoginController::class, 'logout'])->name('admin.logout');
 
-// Protected admin routes
+/*
+|--------------------------------------------------------------------------
+| Protected Admin Routes (requires 'auth.admin')
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin')->middleware('auth.admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    // Admin dashboard
+    Route::get('/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
 
-    Route::get('/create-events', [CreateEventController::class, 'create'])->name('admin.createEvents');
+    Route::get('/create-events', [CreateEventController::class, 'create'])->name('admin.events.createEvents');
     Route::post('/create-events', [CreateEventController::class, 'store'])->name('admin.storeEvents');
 
     Route::get('/events', [TrainingController::class, 'index'])->name('admin.viewEvents');
     Route::get('/events/{id}/edit', [TrainingController::class, 'edit'])->name('admin.editEvents');
     Route::put('/events/{id}', [TrainingController::class, 'update'])->name('admin.updateEvents');
     Route::delete('/events/{id}', [TrainingController::class, 'destroy'])->name('admin.deleteEvents');
+
+    Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::post('/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Recommendation Routes
+|--------------------------------------------------------------------------
+*/
+
+// Get recommendations for a specific event (user dashboard)
 Route::get('/recommendations/{id}', [DashboardController::class, 'getRecommendations']);
 
-Route::get('/recommend', [RecommenderController::class, 'getRecommendations'])->name('recommendations');
+// General recommendation route
+Route::get('/recommend', [ParticipantController::class, 'getRecommendations'])->name('recommendations');
 
-// Route::get('/upload-dataset', [UploadDataSetController::class, 'showUploadForm'])
-//     ->name('admin.upload_dataset');
+/*
+|--------------------------------------------------------------------------
+| Join Particpants Routes
+|--------------------------------------------------------------------------
+*/
+// Handle participant registration
+Route::post('/participants', [ParticipantController::class, 'store'])
+    ->name('participants.store')->middleware('auth');
 
-// Route::post('/upload-dataset', [UploadDataSetController::class, 'uploadDataset'])
-//     ->name('admin.upload_dataset.post');
-
-// Route::get('/retrain-status', [UploadDataSetController::class, 'status'])
-//     ->name('admin.retrain_status');
+// Success page
+Route::get('/participants/{id}/success', [ParticipantController::class, 'success'])
+    ->name('participants.success')->middleware('auth');

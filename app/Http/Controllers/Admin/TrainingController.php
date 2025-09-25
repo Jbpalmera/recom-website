@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Training;
+use App\Models\Category; // Add this import
 
 class TrainingController extends Controller
 {
     // List all events
     public function index()
     {
-        $trainings = Training::latest()->paginate(10); // paginate if needed
+        $trainings = Training::latest()->paginate(10);
         return view('admin.events.index', compact('trainings'));
     }
 
@@ -19,7 +20,9 @@ class TrainingController extends Controller
     public function edit($id)
     {
         $training = Training::findOrFail($id);
-        return view('admin.events.edit', compact('training'));
+        $categories = Category::all(); // Add this line - fetch categories for dropdown
+        
+        return view('admin.events.edit', compact('training', 'categories')); // Pass both variables
     }
 
     // Update an event
@@ -27,16 +30,20 @@ class TrainingController extends Controller
     {
         $training = Training::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'course_title' => 'required|string|max:255',
-            'platform_used' => 'nullable|string|max:255',
             'course_description' => 'nullable|string',
-            'resource_person' => 'nullable|string|max:255',
+            'platform_used' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id', // Add category validation
+            'level' => 'required|string|in:Beginner,Intermediate,Advanced',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after_or_equal:start_time',
+            'resource_person' => 'nullable|string|max:255',
         ]);
 
-        $training->update($request->all());
+        $training->update($validated);
 
         return redirect()->route('admin.viewEvents')->with('success', 'Event updated successfully!');
     }

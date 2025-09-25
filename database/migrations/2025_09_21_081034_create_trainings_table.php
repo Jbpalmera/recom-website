@@ -10,10 +10,11 @@ return new class extends Migration
     {
         Schema::create('trainings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('external_id')->nullable()->index();
             $table->string('course_title');
             $table->string('platform_used');
-            $table->string('course_description');
-            $table->string('category');   // e.g., "Web Dev", "AI", "Business"
+            $table->text('course_description');
+            $table->unsignedBigInteger('category_id'); // Foreign key to categories table
             $table->string('level');      // Beginner, Intermediate, Advanced
             $table->date('start_date');
             $table->date('end_date');
@@ -21,6 +22,12 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->timestamps();
+
+            // Foreign key constraint
+            $table->foreign('category_id')
+                  ->references('id')
+                  ->on('categories')
+                  ->onDelete('cascade'); // optional: deletes trainings if category is deleted
         });
     }
 

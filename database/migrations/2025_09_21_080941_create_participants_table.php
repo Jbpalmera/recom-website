@@ -10,28 +10,18 @@ return new class extends Migration
     {
         Schema::create('participants', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('first_name');
             $table->string('middle_initial')->nullable();
             $table->string('last_name');
             $table->string('name_extension')->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('mobile_no')->nullable();
-            $table->string('sex')->nullable();
-            $table->string('age_group')->nullable();
-            $table->string('civil_status')->nullable();
-            $table->string('nationality')->nullable();
-            $table->string('highest_educational_attainment')->nullable();
-            $table->string('sector_group')->nullable();
-            $table->boolean('senior_citizen')->default(false);
-            $table->boolean('differently_abled')->default(false);
-            $table->boolean('solo_parent')->default(false);
-            $table->string('region')->nullable();
-            $table->string('province')->nullable();
-            $table->string('city_municipality')->nullable();
-            $table->string('agency')->nullable();
-            $table->string('office_affiliation')->nullable();
-            $table->string('designation')->nullable();
+            $table->string('course_title')->nullable();
+
             $table->timestamps();
+
+            $table->unique(['user_id', 'course_title']);
         });
     }
 

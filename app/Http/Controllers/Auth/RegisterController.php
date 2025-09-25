@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth; 
 
 class RegisterController extends Controller
 {
@@ -79,51 +80,52 @@ class RegisterController extends Controller
     }
 
     // Step 2: Register user
-    public function register(Request $request)
-    {
-        // Validate account info
-        $request->validate([
-            'username' => 'required|string|max:255|unique:users,username',
-            'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-        
 
-        $step1 = session()->get('register.step1');
 
-        // Create user
-        $user = User::create([
-            'first_name' => $step1['first_name'] ?? null,
-            'middle_initial' => $step1['middle_initial'] ?? null,
-            'last_name' => $step1['last_name'] ?? null,
-            'name_extension' => $step1['name_extension'] ?? null,
-            'gender' => $step1['gender'] ?? null,
-            'age_group' => $step1['age_group'] ?? null,
-            'civil_status' => $step1['civil_status'] ?? null,
-            'nationality' => $step1['nationality'] ?? null,
-            'highest_educational_background' => $step1['highest_educational_background'] ?? null,
-            'sector_group' => $step1['sector_group'] ?? null,
-            'senior_citizen' => $step1['senior_citizen'] ?? 0,
-            'differently_abled' => $step1['differently_abled'] ?? 0,
-            'solo_parent' => $step1['solo_parent'] ?? 0,
-            'region' => $step1['region'] ?? null,
-            'province' => $step1['province'] ?? null,
-            'city_municipality' => $step1['city_municipality'] ?? null,
-            'agency' => $step1['agency'] ?? null,
-            'office_affiliation' => $step1['office_affiliation'] ?? null,
-            'designation' => $step1['designation'] ?? null,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        
+public function register(Request $request)
+{
+    // Validate account info
+    $request->validate([
+        'username' => 'required|string|max:255|unique:users,username',
+        'email' => 'required|email|max:255|unique:users,email',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
 
-        // Clear session data
-        $request->session()->forget('register');
+    $step1 = session()->get('register.step1');
 
-        // Log in the user (optional)
-        auth()->login($user);
+    // Create user
+    $user = User::create([
+        'first_name' => $step1['first_name'] ?? null,
+        'middle_initial' => $step1['middle_initial'] ?? null,
+        'last_name' => $step1['last_name'] ?? null,
+        'name_extension' => $step1['name_extension'] ?? null,
+        'gender' => $step1['gender'] ?? null,
+        'age_group' => $step1['age_group'] ?? null,
+        'civil_status' => $step1['civil_status'] ?? null,
+        'nationality' => $step1['nationality'] ?? null,
+        'highest_educational_background' => $step1['highest_educational_background'] ?? null,
+        'sector_group' => $step1['sector_group'] ?? null,
+        'senior_citizen' => $step1['senior_citizen'] ?? 0,
+        'differently_abled' => $step1['differently_abled'] ?? 0,
+        'solo_parent' => $step1['solo_parent'] ?? 0,
+        'region' => $step1['region'] ?? null,
+        'province' => $step1['province'] ?? null,
+        'city_municipality' => $step1['city_municipality'] ?? null,
+        'agency' => $step1['agency'] ?? null,
+        'office_affiliation' => $step1['office_affiliation'] ?? null,
+        'designation' => $step1['designation'] ?? null,
+        'username' => $request->username,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+    ]);
 
-        return redirect()->route('welcomePage')->with('success', 'Registration successful!');
-    }
+    // Clear session data
+    $request->session()->forget('register');
+
+    // Log in the user explicitly on the web guard
+    Auth::guard('web')->login($user);
+
+    return redirect()->route('welcomePage')->with('success', 'Registration successful!');
+}
+
 }

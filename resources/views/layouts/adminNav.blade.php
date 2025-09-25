@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Recommender System</title>
-    @vite('resources/css/app.css')
     @include('partials.favicon')
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -137,7 +136,7 @@
                     </div>
 
                 </div>
-                <h2 class="text-2xl font-bold">Recommender</h2>
+                <h2 class="text-2l font-bold">ADMIN PANEL</h2>
             </div>
             <button id="closeSidebar" class="md:hidden text-white hover:text-gray-200">
                 <i class="fas fa-times text-lg"></i>
@@ -145,32 +144,42 @@
         </div>
 
         <nav class="flex-1 p-4 space-y-1 mt-4">
-            <a href="{{ route('dashboard') }}"
+            <a href="{{ route('admin.dashboard') }}"
                 class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-600 transition-all duration-300 group relative nav-item-active">
                 <i class="fas fa-chart-pie mr-3 group-hover:text-gray-200 text-lg"></i>
                 <span class="font-medium">Dashboard</span>
             </a>
-            <a href="{{ route('recommendations') }}"
+
+
+            <a href="{{ route('admin.events.createEvents') }}"
                 class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-600 transition-all duration-300 group relative">
-                <i class="fas fa-calendar-alt mr-3 group-hover:text-gray-200 text-lg"></i>
-                <span class="font-medium">Events</span>
-                <span class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1">3</span>
+                <svg class="w-5 h-5 m-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                    </path>
+                </svg>
+                <span class="font-medium">Create Course</span>
+            </a>
+            <a href="{{ route('admin.viewEvents') }}"
+                class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-600 transition-all duration-300 group relative">
+                <svg class="w-5 h-5 m-2 text-white-600 " fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
+                </svg>
+                <span>View Courses</span>
             </a>
 
-            <a href="{{ route('about') }}"
+            <a href="{{ route('admin.profile') }}"
                 class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-600 transition-all duration-300 group relative">
-                <i class="fas fa-info-circle mr-3 group-hover:text-gray-200 text-lg"></i>
-                <span class="font-medium">About us</span>
-            </a>
-
-            <a href="{{ route('profile') }}"
-                class="flex items-center px-4 py-3 rounded-xl hover:bg-indigo-600 transition-all duration-300 group relative">
-                <i class="fas fa-user mr-3 group-hover:text-gray-200 text-lg"></i>
+                <i class="fas fa-user m-2 group-hover:text-gray-200 text-lg"></i>
                 <span class="font-medium">Profile</span>
             </a>
 
             <div class="pt-4 mt-4 border-t border-indigo-500">
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('admin.logout') }}">
                     @csrf
                     <button type="submit"
                         class="flex items-center w-full text-left px-4 py-3 rounded-xl hover:bg-red-600 transition-all duration-300 group text-red-200 hover:text-white">
@@ -274,19 +283,20 @@
                 <div class="relative">
                     <button id="userDropdownBtn" class="flex items-center space-x-2 focus:outline-none">
                         <div class="text-right hidden sm:block">
-                            <div class="text-sm font-medium text-gray-800">{{ auth()->user()->first_name ?? 'User' }}
+                            <div class="text-sm font-medium text-gray-800">
+                                {{ Auth::guard('admin')->user()->name ?? 'admins' }}
                             </div>
-                            <div class="text-xs text-gray-500">{{ auth()->user()->last_name ?? 'User' }}</div>
+                            {{-- <div class="text-xs text-gray-500">{{ auth()->user()->last_name ?? 'User' }}</div> --}}
                         </div>
                         <div
                             class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full flex items-center justify-center font-bold shadow-md">
-                            {{ substr(auth()->user()->first_name ?? 'U', 0, 1) }}
+                            {{ substr(Auth::guard('admin')->user()->name ?? 'U', 0, 1) }}
                         </div>
                         <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
                     </button>
                     <div id="userDropdown"
                         class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-40">
-                        <a href="{{ route('profile') }}"
+                        <a href="{{ route('admin.profile') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             <i class="fas fa-user mr-2 text-gray-500"></i>Your Profile
                         </a>
@@ -297,7 +307,7 @@
                             <i class="fas fa-question-circle mr-2 text-gray-500"></i>Help & Support
                         </a>
                         <div class="border-t border-gray-100 my-1"></div>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('admin.logout') }}">
                             @csrf
                             <button type="submit"
                                 class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">

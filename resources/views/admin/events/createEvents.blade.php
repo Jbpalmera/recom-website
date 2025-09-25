@@ -5,9 +5,9 @@
     <!-- Header Section -->
     <div class="mb-8 text-center">
         <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            Edit Course Event
+            Create New Course
         </h1>
-        <p class="text-gray-600">Update the details for this learning event</p>
+        <p class="text-gray-600">Fill in the details below to create a new learning event</p>
     </div>
 
     <!-- Success Message -->
@@ -33,20 +33,19 @@
             <div class="flex items-center space-x-3">
                 <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold">Update Event Information</h2>
-                    <p class="text-indigo-100 text-sm">Modify the details for this event</p>
+                    <h2 class="text-xl font-bold">Event Information</h2>
+                    <p class="text-indigo-100 text-sm">Provide all necessary details for the new event</p>
                 </div>
             </div>
         </div>
 
         <!-- Form Content -->
-        <form action="{{ route('admin.updateEvents', $training->id) }}" method="POST" class="p-6 space-y-6" id="eventForm">
+        <form action="{{ route('admin.storeEvents') }}" method="POST" class="p-6 space-y-6" id="eventForm">
             @csrf
-            @method('PUT')
 
             <!-- Course Title -->
             <div class="form-group">
@@ -56,7 +55,7 @@
                     </svg>
                     Course Title
                 </label>
-                <input type="text" name="course_title" value="{{ old('course_title', $training->course_title) }}" 
+                <input type="text" name="course_title" value="{{ old('course_title') }}" 
                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
                        placeholder="Enter course title">
                 @error('course_title') 
@@ -79,7 +78,7 @@
                 </label>
                 <textarea name="course_description" rows="4" 
                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
-                          placeholder="Describe the course content and objectives">{{ old('course_description', $training->course_description) }}</textarea>
+                          placeholder="Describe the course content and objectives">{{ old('course_description') }}</textarea>
                 <div class="text-xs text-gray-500 mt-1">Briefly describe what participants will learn</div>
                 @error('course_description') 
                     <div class="flex items-center mt-1 text-red-600 text-sm">
@@ -102,11 +101,11 @@
                 <select name="platform_used" 
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
                     <option value="">Select Platform</option>
-                    <option value="Zoom" {{ old('platform_used', $training->platform_used) == 'Zoom' ? 'selected' : '' }}>Zoom</option>
-                    <option value="Google Meet" {{ old('platform_used', $training->platform_used) == 'Google Meet' ? 'selected' : '' }}>Google Meet</option>
-                    <option value="Microsoft Teams" {{ old('platform_used', $training->platform_used) == 'Microsoft Teams' ? 'selected' : '' }}>Microsoft Teams</option>
-                    <option value="Webex" {{ old('platform_used', $training->platform_used) == 'Webex' ? 'selected' : '' }}>Webex</option>
-                    <option value="Other" {{ old('platform_used', $training->platform_used) == 'Other' ? 'selected' : '' }}>Other</option>
+                    <option value="Zoom" {{ old('platform_used') == 'Zoom' ? 'selected' : '' }}>Zoom</option>
+                    <option value="Google Meet" {{ old('platform_used') == 'Google Meet' ? 'selected' : '' }}>Google Meet</option>
+                    <option value="Microsoft Teams" {{ old('platform_used') == 'Microsoft Teams' ? 'selected' : '' }}>Microsoft Teams</option>
+                    <option value="Webex" {{ old('platform_used') == 'Webex' ? 'selected' : '' }}>Webex</option>
+                    <option value="Other" {{ old('platform_used') == 'Other' ? 'selected' : '' }}>Other</option>
                 </select>
                 @error('platform_used') 
                     <div class="flex items-center mt-1 text-red-600 text-sm">
@@ -131,7 +130,7 @@
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
                         <option value="">Select Category</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id', $training->category_id) == $category->id ? 'selected' : '' }}>
+                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                 {{ $category->category_name }}
                             </option>
                         @endforeach
@@ -156,9 +155,9 @@
                     <select name="level" 
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
                         <option value="">Select Level</option>
-                        <option value="Beginner" {{ old('level', $training->level) == 'Beginner' ? 'selected' : '' }}>Beginner</option>
-                        <option value="Intermediate" {{ old('level', $training->level) == 'Intermediate' ? 'selected' : '' }}>Intermediate</option>
-                        <option value="Advanced" {{ old('level', $training->level) == 'Advanced' ? 'selected' : '' }}>Advanced</option>
+                        <option value="Beginner" {{ old('level') == 'Beginner' ? 'selected' : '' }}>Beginner</option>
+                        <option value="Intermediate" {{ old('level') == 'Intermediate' ? 'selected' : '' }}>Intermediate</option>
+                        <option value="Advanced" {{ old('level') == 'Advanced' ? 'selected' : '' }}>Advanced</option>
                     </select>
                     @error('level') 
                         <div class="flex items-center mt-1 text-red-600 text-sm">
@@ -184,7 +183,7 @@
                     <!-- Start Date -->
                     <div class="form-group">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
-                        <input type="date" name="start_date" value="{{ old('start_date', $training->start_date) }}" 
+                        <input type="date" name="start_date" value="{{ old('start_date') }}" 
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
                         @error('start_date') 
                             <div class="flex items-center mt-1 text-red-600 text-sm">
@@ -199,7 +198,7 @@
                     <!-- End Date -->
                     <div class="form-group">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
-                        <input type="date" name="end_date" value="{{ old('end_date', $training->end_date) }}" 
+                        <input type="date" name="end_date" value="{{ old('end_date') }}" 
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
                         @error('end_date') 
                             <div class="flex items-center mt-1 text-red-600 text-sm">
@@ -214,7 +213,7 @@
                     <!-- Start Time -->
                     <div class="form-group">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Start Time</label>
-                        <input type="time" name="start_time" value="{{ old('start_time', $training->start_time) }}" 
+                        <input type="time" name="start_time" value="{{ old('start_time') }}" 
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
                         @error('start_time') 
                             <div class="flex items-center mt-1 text-red-600 text-sm">
@@ -229,7 +228,7 @@
                     <!-- End Time -->
                     <div class="form-group">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">End Time</label>
-                        <input type="time" name="end_time" value="{{ old('end_time', $training->end_time) }}" 
+                        <input type="time" name="end_time" value="{{ old('end_time') }}" 
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
                         @error('end_time') 
                             <div class="flex items-center mt-1 text-red-600 text-sm">
@@ -251,7 +250,7 @@
                     </svg>
                     Resource Person
                 </label>
-                <input type="text" name="resource_person" value="{{ old('resource_person', $training->resource_person) }}" 
+                <input type="text" name="resource_person" value="{{ old('resource_person') }}" 
                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
                        placeholder="Enter instructor's name">
                 @error('resource_person') 
@@ -271,7 +270,7 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
-                    Update Event
+                    Create Event
                 </button>
                 <button type="button" 
                         class="bg-gray-100 text-gray-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-200 transition duration-300 flex items-center justify-center"
@@ -279,7 +278,7 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
-                    Reset Changes
+                    Reset Form
                 </button>
             </div>
         </form>
@@ -378,9 +377,14 @@
     }
     
     function resetForm() {
-        if (confirm('Are you sure you want to reset all changes? All modifications will be lost.')) {
-            // Reload the page to reset to original values
-            window.location.reload();
+        if (confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
+            document.getElementById('eventForm').reset();
+            // Clear all custom errors
+            const errors = document.querySelectorAll('.flex.items-center.mt-1.text-red-600');
+            errors.forEach(error => error.remove());
+            
+            const errorFields = document.querySelectorAll('.border-red-500');
+            errorFields.forEach(field => field.classList.remove('border-red-500'));
         }
     }
 </script>

@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
     protected $fillable = [
-    
+
         'first_name',
         'middle_initial',
         'last_name',
@@ -31,22 +32,30 @@ class User extends Authenticatable
         'agency',
         'office_affiliation',
         'designation',
-        'username', 
+        'username',
         'email',
         'password',
-        
+
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
     protected $dates = ['last_login_at'];
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+
+    public function participant()
+    {
+        return $this->hasOne(Participant::class);
     }
 }

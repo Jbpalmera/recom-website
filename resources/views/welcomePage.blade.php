@@ -99,7 +99,7 @@
                 <i class="fas fa-graduation-cap text-4xl text-indigo-600"></i>
             </div>
             <h1 class="text-5xl font-extrabold welcome-text mb-4">
-                Welcome, {{ auth()->user()->first_name }}! 🎉
+                Welcome, {{ auth()->user()->first_name ?? 'User' }}! 🎉
             </h1>
             <p class="text-white text-xl max-w-2xl mx-auto leading-relaxed">
                 You have successfully joined the DICT Course Recommendation System. Let's help you discover the perfect training programs to advance your career!
